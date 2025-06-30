@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Lista de Compra Inteligente</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-font: 'Nunito', sans-serif;
+            --bg-color: #F8F9FA;
+            --card-bg-color: #FFFFFF;
+            --primary-text: #2c3e50;
+            --secondary-text: #7f8c8d;
+            --accent-color: #27AE60;
+            --accent-hover: #229954;
+            --danger-color: #e74c3c;
+            --danger-hover: #c0392b;
+            --light-gray: #ecf0f1;
+            --item-bg: #E8F8F5;
+            --border-radius: 12px;
+            --shadow: 0 4px 15px rgba(0, 0, 0, 0.07);
+        }
+
+        body {
+            font-family: var(--primary-font);
+            margin: 0;
+            padding: 20px;
+            background-color: var(--bg-color);
+            color: var(--primary-text);
+        }
+
+        h1, h2, h3 {
+            color: var(--primary-text);
+            text-align: center;
+            font-weight: 700;
+        }
+        
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 5px;
+        }
+        
+        h2 {
+            font-size: 1.8em;
+        }
+        
+        h3 {
+             font-size: 1.3em;
+             color: var(--accent-color);
+        }
+
+        p.subtitle {
+            text-align: center;
+            color: var(--secondary-text);
+            margin-top: 0;
+            margin-bottom: 40px;
+            font-size: 1.1em;
+        }
+
+        .main-container {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            gap: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .food-pool {
+            flex: 2;
+            min-width: 320px;
+        }
+
+        .shopping-list-container {
+            flex: 1;
+            min-width: 320px;
+            background-color: var(--card-bg-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 25px;
+            align-self: flex-start;
+            position: sticky;
+            top: 20px;
+        }
+        
+        .food-categories-wrapper {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .food-category {
+            background-color: var(--card-bg-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 20px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .food-category:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .food-category h3 {
+            margin-top: 0;
+            border-bottom: 2px solid var(--light-gray);
+            padding-bottom: 10px;
+        }
+
+        .food-category ul {
+            list-style: none;
+            padding: 0;
+            margin-top: 20px;
+        }
+
+        .food-category li {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            font-size: 1.05em;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .food-category li label:hover {
+            color: var(--accent-color);
+        }
+
+        .food-category input[type="checkbox"] {
+            -webkit-appearance: none;
+            appearance: none;
+            background-color: var(--bg-color);
+            margin-right: 12px;
+            font: inherit;
+            color: var(--accent-color);
+            width: 1.25em;
+            height: 1.25em;
+            border: 0.15em solid #bdc3c7;
+            border-radius: 0.35em;
+            transform: translateY(-0.075em);
+            display: grid;
+            place-content: center;
+            cursor: pointer;
+        }
+
+        .food-category input[type="checkbox"]::before {
+            content: "";
+            width: 0.65em;
+            height: 0.65em;
+            transform: scale(0);
+            transition: 120ms transform ease-in-out;
+            box-shadow: inset 1em 1em var(--accent-color);
+            transform-origin: bottom left;
+            clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+        }
+
+        .food-category input[type="checkbox"]:checked::before {
+            transform: scale(1);
+        }
+        
+        .food-category input[type="checkbox"]:checked {
+             border-color: var(--accent-color);
+        }
+
+        .btn {
+            background: linear-gradient(45deg, var(--accent-color), #2ed573);
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 15px;
+            box-shadow: 0 4px 10px rgba(46, 213, 115, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(46, 213, 115, 0.4);
+        }
+        
+        .btn.btn-danger {
+            background: linear-gradient(45deg, var(--danger-color), #ff7675);
+            box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3);
+        }
+        .btn.btn-danger:hover {
+            box-shadow: 0 6px 15px rgba(231, 76, 60, 0.4);
+        }
+
+        #shoppingList {
+            list-style: none;
+            padding: 0;
+            max-height: 45vh;
+            overflow-y: auto;
+            margin-top: 15px;
+            padding-top: 10px;
+        }
+
+        #shoppingList li {
+            background-color: var(--item-bg);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 5px solid var(--accent-color);
+        }
+        
+        #shoppingList li.purchased {
+            text-decoration: line-through;
+            color: var(--secondary-text);
+            background-color: #f8f9f9;
+            border-left-color: var(--light-gray);
+            opacity: 0.7;
+        }
+        
+        #shoppingList li .remove-item {
+            color: var(--danger-color);
+            font-weight: bold;
+            font-size: 1.4em;
+            visibility: hidden;
+            opacity: 0;
+            transition: all 0.2s;
+        }
+        
+        #shoppingList li:hover .remove-item {
+            visibility: visible;
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        #customItemForm {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            border-top: 2px solid var(--light-gray);
+            padding-top: 20px;
+        }
+
+        #customItemInput {
+            flex-grow: 1;
+            padding: 12px;
+            border: 2px solid var(--light-gray);
+            border-radius: 8px;
+            font-size: 1em;
+            font-family: var(--primary-font);
+            transition: border-color 0.3s ease;
+        }
+        
+        #customItemInput:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+        
+        #emptyListMessage {
+            color: var(--secondary-text);
+            text-align: center;
+            padding: 30px 20px;
+            font-style: italic;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="main-container">
+
+        <div class="food-pool">
+            <h1>🥑 Mi Compra Saludable</h1>
+            <p class="subtitle">Selecciona alimentos para crear tu lista de la compra al instante.</p>
+            <div class="food-categories-wrapper">
+                
+                <div class="food-category">
+                    <h3>Proteínas</h3>
+                    <ul>
+                        <li><input type="checkbox" id="salmon_salvaje" data-name="Salmón salvaje"> <label for="salmon_salvaje">Salmón salvaje</label></li>
+                        <li><input type="checkbox" id="sardinas" data-name="Sardinas"> <label for="sardinas">Sardinas</label></li>
+                        <li><input type="checkbox" id="caballa" data-name="Caballa"> <label for="caballa">Caballa</label></li>
+                        <li><input type="checkbox" id="pollo_corral" data-name="Pollo de corral"> <label for="pollo_corral">Pollo de corral</label></li>
+                        <li><input type="checkbox" id="huevos_ecologicos" data-name="Huevos ecológicos"> <label for="huevos_ecologicos">Huevos ecológicos</label></li>
+                        <li><input type="checkbox" id="lentejas" data-name="Lentejas"> <label for="lentejas">Lentejas</label></li>
+                        <li><input type="checkbox" id="garbanzos" data-name="Garbanzos"> <label for="garbanzos">Garbanzos</label></li>
+                    </ul>
+                </div>
+        
+                <div class="food-category">
+                    <h3>Carbohidratos</h3>
+                    <ul>
+                        <li><input type="checkbox" id="quinoa" data-name="Quinua"> <label for="quinoa">Quinua</label></li>
+                        <li><input type="checkbox" id="trigo_sarraceno" data-name="Trigo sarraceno"> <label for="trigo_sarraceno">Trigo sarraceno</label></li>
+                        <li><input type="checkbox" id="boniato" data-name="Boniato"> <label for="boniato">Boniato</label></li>
+                        <li><input type="checkbox" id="patata" data-name="Patata"> <label for="patata">Patata</label></li>
+                        <li><input type="checkbox" id="arroz_largo" data-name="Arroz largo"> <label for="arroz_largo">Arroz largo</label></li>
+                        <li><input type="checkbox" id="avena" data-name="Avena"> <label for="avena">Avena</label></li>
+                    </ul>
+                </div>
+        
+                <div class="food-category">
+                    <h3>Vegetales</h3>
+                    <ul>
+                        <li><input type="checkbox" id="brocoli" data-name="Brócoli"> <label for="brocoli">Brócoli</label></li>
+                        <li><input type="checkbox" id="coliflor" data-name="Coliflor"> <label for="coliflor">Coliflor</label></li>
+                        <li><input type="checkbox" id="espinacas" data-name="Espinacas"> <label for="espinacas">Espinacas</label></li>
+                        <li><input type="checkbox" id="remolacha" data-name="Remolacha"> <label for="remolacha">Remolacha</label></li>
+                        <li><input type="checkbox" id="zanahoria" data-name="Zanahoria"> <label for="zanahoria">Zanahoria</label></li>
+                        <li><input type="checkbox" id="pimientos" data-name="Pimientos"> <label for="pimientos">Pimientos</label></li>
+                        <li><input type="checkbox" id="ajo" data-name="Ajo"> <label for="ajo">Ajo</label></li>
+                        <li><input type="checkbox" id="cebolla" data-name="Cebolla"> <label for="cebolla">Cebolla</label></li>
+                        <li><input type="checkbox" id="tomate" data-name="Tomate"> <label for="tomate">Tomate</label></li>
+                        <li><input type="checkbox" id="alcachofa" data-name="Alcachofa"> <label for="alcachofa">Alcachofa</label></li>
+                    </ul>
+                </div>
+        
+                <div class="food-category">
+                    <h3>Frutas y Semillas</h3>
+                    <ul>
+                        <li><input type="checkbox" id="aguacate" data-name="Aguacate"> <label for="aguacate">Aguacate</label></li>
+                        <li><input type="checkbox" id="frutos_rojos" data-name="Frutos rojos"> <label for="frutos_rojos">Frutos rojos</label></li>
+                        <li><input type="checkbox" id="manzana" data-name="Manzana"> <label for="manzana">Manzana</label></li>
+                        <li><input type="checkbox" id="granada" data-name="Granada"> <label for="granada">Granada</label></li>
+                        <li><input type="checkbox" id="nueces" data-name="Nueces"> <label for="nueces">Nueces</label></li>
+                        <li><input type="checkbox" id="almendras" data-name="Almendras"> <label for="almendras">Almendras</label></li>
+                        <li><input type="checkbox" id="semillas_calabaza" data-name="Semillas de calabaza"> <label for="semillas_calabaza">Semillas de calabaza</label></li>
+                    </ul>
+                </div>
+
+                <div class="food-category">
+                    <h3>Aceites y Fermentados</h3>
+                    <ul>
+                        <li><input type="checkbox" id="aceite_oliva" data-name="Aceite de oliva virgen extra"> <label for="aceite_oliva">Aceite de oliva virgen extra</label></li>
+                        <li><input type="checkbox" id="kefir" data-name="Kéfir"> <label for="kefir">Kéfir (cabra/oveja)</label></li>
+                        <li><input type="checkbox" id="chucrut" data-name="Chucrut"> <label for="chucrut">Chucrut</label></li>
+                        <li><input type="checkbox" id="kimchi" data-name="Kimchi"> <label for="kimchi">Kimchi</label></li>
+                        <li><input type="checkbox" id="aceitunas" data-name="Aceitunas"> <label for="aceitunas">Aceitunas</label></li>
+                    </ul>
+                </div>
+        
+                <div class="food-category">
+                    <h3>Especias y Otros</h3>
+                    <ul>
+                        <li><input type="checkbox" id="curcuma" data-name="Cúrcuma"> <label for="curcuma">Cúrcuma</label></li>
+                        <li><input type="checkbox" id="pimienta_negra" data-name="Pimienta negra"> <label for="pimienta_negra">Pimienta negra</label></li>
+                        <li><input type="checkbox" id="jengibre" data-name="Jengibre"> <label for="jengibre">Jengibre</label></li>
+                        <li><input type="checkbox" id="limon" data-name="Limón"> <label for="limon">Limón</label></li>
+                        <li><input type="checkbox" id="te_verde" data-name="Té verde"> <label for="te_verde">Té verde</label></li>
+                        <li><input type="checkbox" id="cacao_puro" data-name="Cacao puro (>80%)"> <label for="cacao_puro">Cacao puro (>80%)</label></li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="shopping-list-container">
+            <h2>🛒 Tu Lista</h2>
+            <ul id="shoppingList">
+                
+            </ul>
+            <p id="emptyListMessage">Tu lista está vacía. ¡Selecciona alimentos para empezar!</p>
+            
+            <form id="customItemForm">
+                <input type="text" id="customItemInput" placeholder="Añadir otro producto...">
+                <button type="submit" class="btn" style="width: auto; padding: 12px 15px;">Añadir</button>
+            </form>
+
+            <button id="clearListBtn" class="btn btn-danger">Limpiar toda la lista</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const foodCheckboxes = document.querySelectorAll('.food-category input[type="checkbox"]');
+            const shoppingListEl = document.getElementById('shoppingList');
+            const customItemForm = document.getElementById('customItemForm');
+            const customItemInput = document.getElementById('customItemInput');
+            const clearListBtn = document.getElementById('clearListBtn');
+            const emptyListMessage = document.getElementById('emptyListMessage');
+
+            let items = JSON.parse(localStorage.getItem('shoppingListItemsV2')) || [];
+
+            const saveAndRender = () => {
+                localStorage.setItem('shoppingListItemsV2', JSON.stringify(items));
+                renderList();
+            };
+
+            const renderList = () => {
+                shoppingListEl.innerHTML = ''; 
+
+                if (items.length === 0) {
+                    emptyListMessage.style.display = 'block';
+                    shoppingListEl.style.display = 'none';
+                } else {
+                    emptyListMessage.style.display = 'none';
+                    shoppingListEl.style.display = 'block';
+                    
+                    items.forEach(item => {
+                        const li = document.createElement('li');
+                        li.textContent = item.name;
+                        li.dataset.id = item.id;
+                        if (item.purchased) {
+                            li.classList.add('purchased');
+                        }
+                        
+                        const removeSpan = document.createElement('span');
+                        removeSpan.textContent = '×';
+                        removeSpan.className = 'remove-item';
+                        removeSpan.title = 'Eliminar este artículo';
+                        li.appendChild(removeSpan);
+
+                        shoppingListEl.appendChild(li);
+                    });
+                }
+                updatePoolCheckboxes();
+            };
+            
+            const updatePoolCheckboxes = () => {
+                foodCheckboxes.forEach(checkbox => {
+                    checkbox.checked = items.some(item => item.id === checkbox.id);
+                });
+            };
+
+            foodCheckboxes.forEach(checkbox => {
+                const label = checkbox.nextElementSibling;
+                const li = checkbox.parentElement;
+
+                const toggleCheck = () => {
+                    checkbox.checked = !checkbox.checked;
+                    // Disparar el evento change manualmente
+                    const event = new Event('change', { bubbles: true });
+                    checkbox.dispatchEvent(event);
+                }
+
+                label.addEventListener('click', (e) => {
+                    e.preventDefault(); // Prevenir el doble toggle
+                    toggleCheck();
+                });
+                
+                checkbox.addEventListener('change', (e) => {
+                    const id = e.target.id;
+                    const name = e.target.dataset.name;
+                    if (e.target.checked) {
+                        if (!items.some(item => item.id === id)) {
+                            items.push({ id, name, purchased: false });
+                        }
+                    } else {
+                        items = items.filter(item => item.id !== id);
+                    }
+                    saveAndRender();
+                });
+            });
+
+            shoppingListEl.addEventListener('click', (e) => {
+                const targetLi = e.target.closest('li');
+                if (!targetLi) return;
+
+                if (e.target.classList.contains('remove-item')) {
+                    const id = targetLi.dataset.id;
+                    items = items.filter(item => item.id !== id);
+                    saveAndRender();
+                } else {
+                    const id = targetLi.dataset.id;
+                    const item = items.find(item => item.id === id);
+                    if (item) {
+                        item.purchased = !item.purchased;
+                        saveAndRender();
+                    }
+                }
+            });
+
+            customItemForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const itemName = customItemInput.value.trim();
+                if (itemName) {
+                    const newItem = {
+                        id: `custom-${Date.now()}`,
+                        name: itemName,
+                        purchased: false
+                    };
+                    items.push(newItem);
+                    customItemInput.value = '';
+                    saveAndRender();
+                }
+            });
+            
+            clearListBtn.addEventListener('click', () => {
+                // Se elimina la ventana de confirmación 'confirm()' porque puede ser bloqueada
+                // por el navegador en entornos de vista previa (iframes).
+                // Ahora el botón funcionará de forma fiable.
+                if (items.length > 0) {
+                    items = [];
+                    saveAndRender();
+                }
+            });
+
+            renderList();
+        });
+    </script>
+
+</body>
+</html>
